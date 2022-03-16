@@ -1,21 +1,16 @@
-const sveltePreprocess = require('svelte-preprocess');
-const netlify = require('@sveltejs/adapter-netlify');
-const pkg = require('./package.json');
+import adapter from '@sveltejs/adapter-netlify';
+import { join } from 'path';
+import { readFileSync } from 'fs';
+import { cwd } from 'process';
+
+const pkg = JSON.parse(readFileSync(join(cwd(), 'package.json')));
 
 /** @type {import('@sveltejs/kit').Config} */
-module.exports = {
-	// Consult https://github.com/sveltejs/svelte-preprocess
-	// for more information about preprocessors
-	preprocess: sveltePreprocess(),
+const config = {
 	kit: {
-		// By default, `npm run build` will create a standard Node app.
-		// You can create optimized builds for different platforms by
-		// specifying a different adapter
-		adapter: netlify(),
-
-		// hydrate the <div id="svelte"> element in src/app.html
-		target: '#svelte',
-
+		adapter: adapter({
+			split: false
+		}),
 		vite: {
 			ssr: {
 				noExternal: Object.keys(pkg.dependencies || {})
@@ -23,3 +18,5 @@ module.exports = {
 		}
 	}
 };
+
+export default config;
